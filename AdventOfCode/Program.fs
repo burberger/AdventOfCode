@@ -2,8 +2,10 @@
 open RockPaperScissors
 open Rucksack
 open CampCleanup
+open SupplyStacks
 
 getDay1Solution
 getDay2Solution
 getDay3Solution
 getDay4Solution
+getDay5Solution

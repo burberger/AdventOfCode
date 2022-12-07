@@ -6,15 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="stackInstructions.txt" />
     <Content Include="cleanupAssignments.txt" />
     <Content Include="rucksackItems.txt" />
     <Content Include="StrategyGuide.txt" />
     <Content Include="elfCalories.txt" />
     <Compile Include="Utils.fs" />
-    <Compile Include="CampCleanup.fs" />
-    <Compile Include="Rucksack.fs" />
-    <Compile Include="RockPaperScissors.fs" />
     <Compile Include="ElfCalories.fs" />
+    <Compile Include="RockPaperScissors.fs" />
+    <Compile Include="Rucksack.fs" />
+    <Compile Include="CampCleanup.fs" />
+    <Compile Include="SupplyStacks.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
