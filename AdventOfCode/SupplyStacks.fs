@@ -38,10 +38,9 @@ let parseCrateLine(crateLine: string): CrateLine =
 
 let appendCrateLayer(crates: StackSet, crateLine: CrateLine): StackSet =
     (crates, crateLine) ||> Seq.map2(fun crateStack crate -> 
-        if crate.IsSome then 
-            crateStack @ [crate.Value]
-        else
-            crateStack
+        match crate with
+        | Some c -> crateStack @ [c]
+        | None -> crateStack
     ) |> Seq.toList
 
 let buildStackSet(fileContents: seq<string>): StackSet =
@@ -72,6 +71,6 @@ let getDay5Solution =
     let revTopCrates = getTopCrates revFinalCrates
     let fwdTopCrates = getTopCrates fwdFinalCrates
 
-    printf "%A\n" revTopCrates
-    printf "%A\n" fwdTopCrates
+    printf "%s\n" revTopCrates
+    printf "%s\n" fwdTopCrates
 
