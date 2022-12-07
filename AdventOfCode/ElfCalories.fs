@@ -22,7 +22,6 @@ let getElfCalories (filename: string): seq<int> =
 let getSortedElfCalories (filename: string): int list =
     getElfCalories filename |> Seq.toList |> List.sortDescending
 
-
 let getDay1Solution = 
     let calories = getSortedElfCalories @"C:\Users\bob\source\repos\AdventOfCode\AdventOfCode\elfCalories.txt"
 

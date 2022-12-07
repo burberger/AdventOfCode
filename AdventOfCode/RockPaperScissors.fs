@@ -1,6 +1,5 @@
 ﻿module RockPaperScissors
 
-open System.IO
 open Utils
 
 type GameResult =

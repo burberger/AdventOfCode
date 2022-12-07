@@ -24,7 +24,6 @@ let getSharedElement(itemsList: seq<string>, index: int): Option<char * int> =
         let sharedChar = group |> Seq.map(fun x -> x |> Set.ofSeq) |> Set.intersectMany |> Set.minElement
         Some((sharedChar, index + 3))
 
-
 let getDay3Solution =
     printf "\nDAY 3\n"
 
