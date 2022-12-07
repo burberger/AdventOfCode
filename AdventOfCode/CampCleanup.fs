@@ -16,7 +16,7 @@ let checkFullOverlap(assignmentStr: string): int =
     }))
     let overlap = assignments |> Set.intersectMany
 
-    let result = overlap.Count = (Seq.head assignments).Count or overlap.Count = (Seq.last assignments).Count
+    let result = overlap.Count = (Seq.head assignments).Count || overlap.Count = (Seq.last assignments).Count
     if result then 1 else 0
 
 let getDay4Solution =
