@@ -24,6 +24,7 @@ let getMoveForResult(opponentMove: SelectedPiece, result: GameResult): SelectedP
     | (SelectedPiece.Scissors, GameResult.Win) -> SelectedPiece.Rock
     | (SelectedPiece.Scissors, GameResult.Draw) -> SelectedPiece.Scissors
     | (SelectedPiece.Scissors, GameResult.Loss) -> SelectedPiece.Paper
+    | _ -> raise (System.ArgumentException("Invalid move"))
 
 type Game = struct 
     val Opponent: SelectedPiece
@@ -32,19 +33,21 @@ type Game = struct
     new(opponent, player) = { Opponent = opponent; Player = player }
 
     member this.result: int = 
-        let score = match (this.Opponent, this.Player) with
-        // Losses
-        | (SelectedPiece.Rock, SelectedPiece.Scissors) -> 0
-        | (SelectedPiece.Paper, SelectedPiece.Rock) -> 0
-        | (SelectedPiece.Scissors, SelectedPiece.Paper) -> 0
-        // Draws
-        | (SelectedPiece.Rock, SelectedPiece.Rock) -> 3
-        | (SelectedPiece.Paper, SelectedPiece.Paper) -> 3
-        | (SelectedPiece.Scissors, SelectedPiece.Scissors) -> 3
-        // Wins
-        | (SelectedPiece.Rock, SelectedPiece.Paper) -> 6
-        | (SelectedPiece.Paper, SelectedPiece.Scissors) -> 6
-        | (SelectedPiece.Scissors, SelectedPiece.Rock) -> 6
+        let score = 
+            match (this.Opponent, this.Player) with
+            // Losses
+            | (SelectedPiece.Rock, SelectedPiece.Scissors) -> 0
+            | (SelectedPiece.Paper, SelectedPiece.Rock) -> 0
+            | (SelectedPiece.Scissors, SelectedPiece.Paper) -> 0
+            // Draws
+            | (SelectedPiece.Rock, SelectedPiece.Rock) -> 3
+            | (SelectedPiece.Paper, SelectedPiece.Paper) -> 3
+            | (SelectedPiece.Scissors, SelectedPiece.Scissors) -> 3
+            // Wins
+            | (SelectedPiece.Rock, SelectedPiece.Paper) -> 6
+            | (SelectedPiece.Paper, SelectedPiece.Scissors) -> 6
+            | (SelectedPiece.Scissors, SelectedPiece.Rock) -> 6
+            | _ -> raise (System.ArgumentException("Invalid move"))
 
         score + int this.Player
 end
@@ -52,34 +55,38 @@ end
 
 let parseDirectGame (gameStr: string): Game =
     let moves = gameStr.Split [|' '|]
-    let opponent = match moves[0] with
-    | "A" -> Some(SelectedPiece.Rock)
-    | "B" -> Some(SelectedPiece.Paper)
-    | "C" -> Some(SelectedPiece.Scissors)
-    | _ -> None
+    let opponent = 
+        match moves[0] with
+        | "A" -> Some(SelectedPiece.Rock)
+        | "B" -> Some(SelectedPiece.Paper)
+        | "C" -> Some(SelectedPiece.Scissors)
+        | _ -> None
 
-    let player = match moves[1] with
-    | "X" -> Some(SelectedPiece.Rock)
-    | "Y" -> Some(SelectedPiece.Paper)
-    | "Z" -> Some(SelectedPiece.Scissors)
-    | _ -> None
+    let player = 
+        match moves[1] with
+        | "X" -> Some(SelectedPiece.Rock)
+        | "Y" -> Some(SelectedPiece.Paper)
+        | "Z" -> Some(SelectedPiece.Scissors)
+        | _ -> None
 
     new Game(opponent.Value, player.Value)
 
 let parseStrategyGame (gameStr: string): Game = 
     let moves = gameStr.Split [|' '|]
 
-    let opponent = match moves[0] with
-    | "A" -> Some(SelectedPiece.Rock)
-    | "B" -> Some(SelectedPiece.Paper)
-    | "C" -> Some(SelectedPiece.Scissors)
-    | _ -> None
+    let opponent = 
+        match moves[0] with
+        | "A" -> Some(SelectedPiece.Rock)
+        | "B" -> Some(SelectedPiece.Paper)
+        | "C" -> Some(SelectedPiece.Scissors)
+        | _ -> None
 
-    let playerResult = match moves[1] with
-    | "X" -> Some(GameResult.Loss)
-    | "Y" -> Some(GameResult.Draw)
-    | "Z" -> Some(GameResult.Win)
-    | _ -> None
+    let playerResult = 
+        match moves[1] with
+        | "X" -> Some(GameResult.Loss)
+        | "Y" -> Some(GameResult.Draw)
+        | "Z" -> Some(GameResult.Win)
+        | _ -> None
 
     let player = getMoveForResult(opponent.Value, playerResult.Value)
 
