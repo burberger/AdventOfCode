@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="rucksackItems.txt" />
+    <Compile Include="Utils.fs" />
+    <Compile Include="Rucksack.fs" />
+    <Content Include="StrategyGuide.txt" />
+    <Compile Include="RockPaperScissors.fs" />
+    <Compile Include="ElfCalories.fs" />
+    <Content Include="elfCalories.txt" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
