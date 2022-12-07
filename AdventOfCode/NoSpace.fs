@@ -14,12 +14,11 @@ end
 
 type Directory = struct
     val Name: string
-    val Parent: Option<Directory>
     val Subdirs: List<Directory>
     val Files: List<File>
 
-    new (name: string, parent: Option<Directory>, subdirs: List<Directory>, files: List<File>) =
-        { Name = name; Parent = parent; Subdirs = subdirs; Files = files }
+    new (name: string, subdirs: List<Directory>, files: List<File>) =
+        { Name = name; Subdirs = subdirs; Files = files }
 end
 
 let rec processDirectory(lines: seq<string>, dir: Directory): Directory =
@@ -30,11 +29,10 @@ let rec processDirectory(lines: seq<string>, dir: Directory): Directory =
             dir
         elif line.Contains "cd" then
             let name = line.Split " " |> Array.last
-            let newDir = Directory(name, Some(dir), List.empty, List.empty)
+            let newDir = Directory(name, List.empty, List.empty)
 
             let updatedDir = Directory(
                 dir.Name,
-                dir.Parent,
                 dir.Subdirs @ [processDirectory(lines, newDir)],
                 dir.Files
             )
@@ -42,7 +40,6 @@ let rec processDirectory(lines: seq<string>, dir: Directory): Directory =
         else
             let updatedDir = Directory(
                 dir.Name,
-                dir.Parent,
                 dir.Subdirs,
                 dir.Files @ [File(line)]
             )
@@ -52,7 +49,7 @@ let rec processDirectory(lines: seq<string>, dir: Directory): Directory =
 
 let processDirectoryListing(lines: seq<string>): Directory = 
     let _ = lines |> Seq.head
-    processDirectory(lines, Directory("/", None, List.empty, List.empty))
+    processDirectory(lines, Directory("/", List.empty, List.empty))
 
 let printFile(file: File, prefix: string) =
     printf "%s- %s (file, size=%i)\n" prefix file.Name file.Size
