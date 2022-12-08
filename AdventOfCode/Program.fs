@@ -5,6 +5,7 @@ open CampCleanup
 open SupplyStacks
 open TuningTrouble
 open NoSpace
+open TreeHouse
 
 getDay1Solution
 getDay2Solution
@@ -13,3 +14,4 @@ getDay4Solution
 getDay5Solution
 getDay6Solution
 getDay7Solution
+getDay8Solution

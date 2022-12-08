@@ -13,6 +13,8 @@
     <Content Include="elfCalories.txt" />
     <Content Include="stream.txt" />
     <Content Include="dirListing.txt" />
+    <Content Include="treeFileEx.txt" />
+    <Content Include="treeFile.txt" />
     <Compile Include="Utils.fs" />
     <Compile Include="ElfCalories.fs" />
     <Compile Include="RockPaperScissors.fs" />
@@ -21,7 +23,12 @@
     <Compile Include="SupplyStacks.fs" />
     <Compile Include="TuningTrouble.fs" />
     <Compile Include="NoSpace.fs" />
+    <Compile Include="TreeHouse.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="XPlot.Plotly" Version="4.0.6" />
   </ItemGroup>
 
 </Project>
