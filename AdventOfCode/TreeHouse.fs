@@ -72,36 +72,39 @@ let totalVisibleTrees(visibleMatrix: bool[,]): int =
             yield intMat[i, *] |> Array.sum
     } |> Seq.sum
 
-let findViewDistance(visible: bool array): int array =
-    let rec findViewDistance(currentDistance: int, visible: bool array): int array =
-        if visible.Length = 0 then
-            [||]
+let findViewDistance(height: int, trees: int array): int =
+    let rec findViewDistance(dist: int, trees: int array): int =
+        if Array.head trees >= height || trees.Length = 1 then
+            dist
         else
-            if Array.head visible then
-                Array.concat [| [|currentDistance|]; findViewDistance(currentDistance + 1, Array.tail visible) |]
-            else
-                Array.concat [| [|currentDistance|]; findViewDistance(1, Array.tail visible) |]
+            findViewDistance(dist + 1, Array.tail trees)
 
-    let size = visible.Length - 1
-    Array.concat [| [|0|]; findViewDistance(1, visible[1..size - 1]); [|0|] |]
+    findViewDistance(1, trees)
 
-let findDistance(visible: bool array): int array =
-    let front = findViewDistance(visible)
-    let back = findViewDistance(visible |> Array.rev) |> Array.rev
+let findDistanceMatrix(treeMatrix: int[,]): int[,] =
+    let size = treeMatrix.GetLength 0
+    let viewDist = Array2D.zeroCreate size size
 
-    (front, back) ||> Array.map2(*)
+    for i in 1..size-2 do
+        for j in 1..size-2 do
+            let height = treeMatrix[i, j]
+            let distances = 
+                findViewDistance(height, treeMatrix[i, ..j-1] |> Array.rev) ::
+                findViewDistance(height, treeMatrix[i, j+1..]) ::
+                findViewDistance(height, treeMatrix[..i-1, j] |> Array.rev) ::
+                [findViewDistance(height, treeMatrix[i+1.., j])]
 
-let findViewingDistanceMatrix(visibleMatrix: bool[,]): int[,] =
-    let size = visibleMatrix.GetLength 0
-    let viewMatrix = Array2D.create size size 1
+            let total = distances |> List.reduce(fun a b -> a * b)
+            viewDist[i, j] <- total
 
-    for i in 0..size-1 do
-        let row = findDistance(visibleMatrix[i, *])
-        let col = findDistance(visibleMatrix[*, i])
-        viewMatrix[i, *] <- (viewMatrix[i, *], row) ||> Array.map2(*)
-        viewMatrix[*, i] <- (viewMatrix[*, i], col) ||> Array.map2(*)
+    viewDist
 
-    viewMatrix
+let findMaxScore(viewMat: int[,]): int =
+    let size = viewMat.GetLength 0
+    seq {
+        for i in 0..size-1 do
+            yield viewMat[i, *] |> Array.max
+    } |> Seq.max
 
 let Plot(data) = 
     Heatmap(
@@ -112,17 +115,20 @@ let Plot(data) =
     |> Chart.WithHeight 1024
     |> Chart.Show
 
-
 let getDay8Solution = 
     printf "\nDAY 8\n"
 
-    let treeFile = readFile @"C:\Users\bob\source\repos\AdventOfCode\AdventOfCode\treeFileEx.txt" |> Seq.toList
+    let treeFile = readFile @"C:\Users\bob\source\repos\AdventOfCode\AdventOfCode\treeFile.txt" |> Seq.toList
+
     let treeMatrix = buildTreeMatrix treeFile 
     let visibleMatrix = findVisibleTreeMatrix treeMatrix
     let totalVisible = totalVisibleTrees visibleMatrix
+    let distanceMatrix = findDistanceMatrix treeMatrix
+    let maxScore = findMaxScore distanceMatrix
 
     //Plot treeMatrix
     //Plot(visibleMatrix |> Array2D.map(fun vis -> if vis then 1 else 0))
 
     printf "%d\n" totalVisible
+    printf "%d\n" maxScore
 
