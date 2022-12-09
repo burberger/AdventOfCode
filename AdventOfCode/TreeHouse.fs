@@ -127,6 +127,7 @@ let getDay8Solution =
     let maxScore = findMaxScore distanceMatrix
 
     //Plot treeMatrix
+    //Plot distanceMatrix
     //Plot(visibleMatrix |> Array2D.map(fun vis -> if vis then 1 else 0))
 
     printf "%d\n" totalVisible
