@@ -17,6 +17,8 @@
     <Content Include="treeFile.txt" />
     <Content Include="ropeMovesEx.txt" />
     <Content Include="ropeMoves.txt" />
+    <Content Include="crtInstructionsEx.txt" />
+    <Content Include="crtInstructions.txt" />
     <Compile Include="Utils.fs" />
     <Compile Include="ElfCalories.fs" />
     <Compile Include="RockPaperScissors.fs" />
@@ -27,6 +29,7 @@
     <Compile Include="NoSpace.fs" />
     <Compile Include="TreeHouse.fs" />
     <Compile Include="RopeBridge.fs" />
+    <Compile Include="CathodeRay.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
