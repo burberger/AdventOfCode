@@ -19,6 +19,8 @@
     <Content Include="ropeMoves.txt" />
     <Content Include="crtInstructionsEx.txt" />
     <Content Include="crtInstructions.txt" />
+    <Content Include="monkeyDataEx.txt" />
+    <Content Include="monkeyData.txt" />
     <Compile Include="Utils.fs" />
     <Compile Include="ElfCalories.fs" />
     <Compile Include="RockPaperScissors.fs" />
@@ -30,6 +32,7 @@
     <Compile Include="TreeHouse.fs" />
     <Compile Include="RopeBridge.fs" />
     <Compile Include="CathodeRay.fs" />
+    <Compile Include="MonkeyMiddle.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
