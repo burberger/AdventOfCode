@@ -12,16 +12,16 @@ type Operation =
 
 type Monkey = {
     Id: int
-    Items: List<int>
+    Items: List<int64>
     Op: Operation
     Test: int
     Condition: int * int
     EvalCount: int
 }
 
-let parseItems(startingItemsStr: string): List<int> =
+let parseItems(startingItemsStr: string): List<int64> =
     let justItems = (startingItemsStr.Split ':')[1]
-    justItems.Split ',' |> Array.map int |> Array.toList
+    justItems.Split ',' |> Array.map int64 |> Array.toList
 
 let parseOperand(op: string): Operand =
     if op.Contains "old" then
@@ -67,7 +67,7 @@ let parseMonkeys(monkeyStr: List<string>): Monkey array =
             yield parseMonkey(monkeyStr[i..i+6])
     } |> Seq.toArray
 
-let evalOperation(item: int, op: Operation): int =
+let evalOperation(item: int64, op: Operation): int64 =
     let opFunc, a, b = 
         match op with
         | Add (a, b) -> ((+), a, b)
@@ -81,11 +81,11 @@ let evalOperation(item: int, op: Operation): int =
 
     opResult
 
-let evalItems(monkey: Monkey, destressFn: int -> int): List<int * int> =
+let evalItems(monkey: Monkey, destressFn: int64 -> int64): List<int * int64> =
     let evalResults = monkey.Items |> List.map(fun item -> destressFn(evalOperation(item, monkey.Op)))
     let testResults = evalResults |> List.map(
         fun item -> 
-            if item % monkey.Test = 0 then 
+            if item % int64 monkey.Test = 0 then 
                 fst monkey.Condition 
             else 
                 snd monkey.Condition
@@ -93,7 +93,7 @@ let evalItems(monkey: Monkey, destressFn: int -> int): List<int * int> =
 
     (testResults, evalResults) ||> List.zip
 
-let addItem(item: int, monkey: Monkey): Monkey =
+let addItem(item: int64, monkey: Monkey): Monkey =
     {
         Id = monkey.Id
         Items = monkey.Items @ [item]
@@ -116,14 +116,14 @@ let updateEvals(monkey: Monkey): Monkey =
 let computeRound(monkeys: Monkey array) = 
     for i in 0..monkeys.Length-1 do
         let monkey = monkeys[i]
-        let newItems = evalItems(monkey, fun item -> item / 3)
+        let newItems = evalItems(monkey, fun item -> item / 3L)
         newItems |> List.iter(fun (index, item) -> monkeys[index] <- addItem(item, monkeys[index]))
         monkeys[i] <- updateEvals(monkey)
 
-let computeLargeRound(monkeys: Monkey array, maxVal: int) = 
+let computeLargeRound(monkeys: Monkey array, moduloVal: int64) = 
     for i in 0..monkeys.Length-1 do
         let monkey = monkeys[i]
-        let newItems = evalItems(monkey, fun item -> item % maxVal)
+        let newItems = evalItems(monkey, fun item -> item % moduloVal)
         newItems |> List.iter(fun (index, item) -> monkeys[index] <- addItem(item, monkeys[index]))
         monkeys[i] <- updateEvals(monkey)
 
@@ -133,10 +133,25 @@ let getActivity(monkeys: Monkey array): int array =
 let printState(monkeys: Monkey array) =
     monkeys |> Array.iter(fun monkey -> printf "Monkey %d, Inspected %d: %A\n" monkey.Id monkey.EvalCount monkey.Items)
 
+let rec gcd(a: int, b: int): int =
+    if b = 0 then
+        a
+    else
+        gcd(b, a % b)
+
+let lcm(a: int, b: int): int =
+    if a = 0 then
+        b
+    else
+        (a * b) / gcd(a, b)
+
+let lcmMonkeys(monkeys: Monkey array): int =
+    (0, monkeys) ||> Array.fold(fun acc monkey -> lcm(acc, monkey.Test))
+
 let getDay11Solution =
     printf "\nDAY 11\n"
 
-    let monkeyStart = readFile @"C:\Users\bob\source\repos\AdventOfCode\AdventOfCode\monkeyDataEx.txt" |> Seq.toList
+    let monkeyStart = readFile @"C:\Users\bob\source\repos\AdventOfCode\AdventOfCode\monkeyData.txt" |> Seq.toList
     let monkeys = parseMonkeys monkeyStart
 
     for i in 1..20 do
@@ -150,11 +165,14 @@ let getDay11Solution =
 
     // Part 2
     let monkeys = parseMonkeys monkeyStart
-    let maxVal = 96577
-    printf "MaxVal %d\n" maxVal
-    for i in 1..1000 do
-        computeLargeRound(monkeys, maxVal)
-        //printState monkeys
+    let moduloVal = lcmMonkeys(monkeys)
+    printf "%d\n" moduloVal
+
+    let stopWatch = System.Diagnostics.Stopwatch.StartNew()
+    for i in 1..10000 do
+        computeLargeRound(monkeys, moduloVal)
+
+    printfn "Time to complete: %f" stopWatch.Elapsed.TotalMilliseconds
 
     printState monkeys
     let topTwo = monkeys |> getActivity |> Array.take 2 |> Array.map int64
