@@ -9,6 +9,7 @@ open TreeHouse
 open RopeBridge
 open CathodeRay
 open MonkeyMiddle
+open HillClimbing
 
 //getDay1Solution
 //getDay2Solution
@@ -20,4 +21,5 @@ open MonkeyMiddle
 //getDay8Solution
 //getDay9Solution
 //getDay10Solution
-getDay11Solution
+//getDay11Solution
+getDay12Solution
