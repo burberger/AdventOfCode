@@ -10,7 +10,7 @@ type Point = {
 
 type Grid = {
     Heights: int[,]
-    Start: Point
+    Start: Point list
     End: Point
 }
 
@@ -54,7 +54,26 @@ let parseGrid(gridStr: string list): Grid =
         | Some idx -> endPos <- {X = idx; Y = i}
         | None -> ()
 
-    {Heights = grid; Start = startPos; End = endPos}
+    {Heights = grid; Start = [startPos]; End = endPos}
+
+let findAllStarts(grid: Grid): Grid =
+    let xMax = (grid.Heights.GetLength 0) - 1
+    let yMax = (grid.Heights.GetLength 1) - 1
+
+    let starts = 
+        seq {
+            for i in 0..xMax do
+                for j in 0..yMax do
+                    if grid.Heights[i, j] = 0 then
+                        yield {X = i; Y = j}
+        } |> Seq.toList
+
+    {
+        Heights = grid.Heights;
+        Start = starts;
+        End = grid.End;
+    }
+    
 
 let getNeighbors(pos, grid): Point list =
     let xMax = (grid.Heights.GetLength 0) - 1
@@ -73,7 +92,7 @@ let getNeighbors(pos, grid): Point list =
     |> Seq.filter(fun point -> grid.Heights[point.X, point.Y] <= posHeight + 1) 
     |> Seq.toList
 
-let findPath(grid: Grid): int =
+let findPath(start: Point, grid: Grid): int =
     let queue = Queue()
 
     let rec findPath(explored: Set<Point>, grid: Grid): int = 
@@ -98,8 +117,8 @@ let findPath(grid: Grid): int =
 
                 findPath(explored, grid)
             
-    queue.Enqueue((0, grid.Start))
-    let explored = Set.empty |> Set.add(grid.Start)
+    queue.Enqueue((0, start))
+    let explored = Set.empty |> Set.add(start)
 
     findPath(explored, grid)
 
@@ -111,7 +130,14 @@ let getDay12Solution =
 
     let gridStr = readFile @"heightMap.txt" |> Seq.toList
     let grid = parseGrid(gridStr)
-    let result = findPath(grid)
+    let result = findPath(grid.Start[0], grid)
 
-    printfn "%A" grid.Start
+    let allStartsGrid = findAllStarts(grid)
+    let shortestPath = 
+        allStartsGrid.Start 
+        |> List.map(fun point -> findPath(point, grid))
+        |> List.filter(fun dist -> dist <> -1)
+        |> List.min
+
     printfn "%A" result
+    printfn "%A" shortestPath
