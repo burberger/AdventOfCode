@@ -11,53 +11,67 @@ type Point = {
 type Grid = {
     Heights: int[,]
     Start: Point
+    End: Point
 }
 
 let Zero(): Point = 
     {X = 0; Y = 0}
 
-let parseLine(line: string): int option * int array =
+let parseLine(line: string): int option * int option * int array =
     let mutable startIdx = None
-    (startIdx, seq {
-        for i in 0..line.Length-1 do
-            if line[i] = 'S' then
-                startIdx <- Some(i)
-                yield 0
-            elif line[i] = 'E' then
-                yield 26
-            else
-                yield (int line[i] - 97)
-    } |> Seq.toArray)
+    let mutable endIdx = None
+    let convertedArray = 
+        seq {
+            for i in 0..line.Length-1 do
+                if line[i] = 'S' then
+                    startIdx <- Some(i)
+                    yield 0
+                elif line[i] = 'E' then
+                    endIdx <- Some(i)
+                    yield 25
+                else
+                    yield (int line[i] - 97)
+        } |> Seq.toArray
+
+    (startIdx, endIdx, convertedArray)
 
 let parseGrid(gridStr: string list): Grid =
     let ySize = gridStr.Length
     let xSize = gridStr[0].Length
-    let grid = Array2D.zeroCreate ySize xSize
+    let grid = Array2D.zeroCreate xSize ySize
 
-    let mutable startPos = {X = 0; Y = 0}
+    let mutable startPos = Zero()
+    let mutable endPos = Zero()
     for i in 0..ySize-1 do
-        let startIdx, gridLine = parseLine(gridStr[i])
-        grid[i, *] <- gridLine
+        let startIdx, endIdx, gridLine = parseLine(gridStr[i])
+        grid[*, i] <- gridLine
 
         match startIdx with
         | Some idx -> startPos <- {X = idx; Y = i}
         | None -> ()
 
-    {Heights = grid; Start = startPos}
+        match endIdx with
+        | Some idx -> endPos <- {X = idx; Y = i}
+        | None -> ()
+
+    {Heights = grid; Start = startPos; End = endPos}
 
 let getNeighbors(pos, grid): Point list =
-    let width = (grid.Heights.GetLength 0) - 1
-    let height = (grid.Heights.GetLength 1) - 1
+    let xMax = (grid.Heights.GetLength 0) - 1
+    let yMax = (grid.Heights.GetLength 1) - 1
+    let posHeight = grid.Heights[pos.X, pos.Y]
     seq {
         if pos.X > 0 then
             yield {X = pos.X - 1; Y = pos.Y}
         if pos.Y > 0 then
             yield {X = pos.X; Y = pos.Y - 1}
-        if pos.X < width then
+        if pos.X < xMax then
             yield {X = pos.X + 1; Y = pos.Y}
-        if pos.Y < height then
+        if pos.Y < yMax then
             yield {X = pos.X; Y = pos.Y + 1}
-    } |> Seq.toList
+    } 
+    |> Seq.filter(fun point -> grid.Heights[point.X, point.Y] <= posHeight + 1) 
+    |> Seq.toList
 
 let findPath(grid: Grid): int =
     let queue = Queue()
@@ -69,14 +83,13 @@ let findPath(grid: Grid): int =
             let dist, point = queue.Dequeue()
             let height = grid.Heights[point.X, point.Y]
 
-            if height = 26 then
+            if point = grid.End then
                 dist
             else
                 let neighbors = getNeighbors(point, grid)
                 let explored = (explored, neighbors) ||> List.fold(
                     fun explored neighbor -> 
-                        let neighborHeight = grid.Heights[neighbor.X, neighbor.Y]
-                        if not <| explored.Contains(neighbor) && neighborHeight <= height then
+                        if not <| explored.Contains(neighbor) then
                             queue.Enqueue((dist + 1, neighbor))
                             explored.Add(neighbor)
                         else
@@ -96,9 +109,9 @@ let findPath(grid: Grid): int =
 let getDay12Solution =
     printf "\nDAY 12\n"
 
-    let gridStr = readFile @"heightMapEx.txt" |> Seq.toList
+    let gridStr = readFile @"heightMap.txt" |> Seq.toList
     let grid = parseGrid(gridStr)
     let result = findPath(grid)
 
-    printfn "%A" grid
+    printfn "%A" grid.Start
     printfn "%A" result
